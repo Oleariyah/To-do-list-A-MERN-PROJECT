@@ -3,16 +3,11 @@ import React, { Component } from 'react';
 // components
 import TodoList from './components/todoList';
 
-
 class App extends Component {
   
-    
-  render() {
+render() {
   return (
     <TodoList  />
-  );
-  }
-  }
-
-
+  );}}
+  
   export default App;

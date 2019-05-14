@@ -15,22 +15,23 @@ import {form, todolist, wrapper} from '../static/todoClass';
 
 
 class TodoList extends Component {
-    
+
     updateTodo = async todo => {
-        //update todo
-        await this.props.updateTodo({
+          //update todo
+          await this.props.updateTodo({
           variables: {
             id: todo.id,
             complete: !todo.complete
           },
           update : store => {
             // Read the data from our cache for this query.
-            const data = store.readQuery({ query:TodosQuery });
+            let data = store.readQuery({ query:TodosQuery });
             // Add our comment from the mutation to the end.
-            data.todos = data.todos.map(x => x.id === todo.id ? ({...todo, complete: !todo.complete}) : x)
+            data = data.todos.map(x => x.id === todo.id ? ({...todo, complete: !todo.complete}) : x)
             // Write our data back to the cache.
             store.writeQuery({ query: TodosQuery, data});
-          }
+          },
+          refetchQueries:[{ query: TodosQuery}]
         })
       };
     
@@ -42,15 +43,17 @@ class TodoList extends Component {
             },
             update: store => {
               // Read the data from our cache for this query.
-              const data = store.readQuery({ query: TodosQuery });
+              let data = store.readQuery({ query: TodosQuery });
               // Update our TodosQuery from the mutation to the end.
-              data.todos = data.todos.filter(x => x.id !== todo.id);
+              data = data.todos.filter(x => x.id !== todo.id);
               // Write our data back to the cache.
             store.writeQuery({ query: TodosQuery, data});
             },
-            refetchQueries: [{TodosQuery}]
+            refetchQueries:[{ query: TodosQuery}]
         });
         };
+        
+
     createTodo = async text => {
       //createTodo
       await this.props.createTodo({
@@ -59,21 +62,29 @@ class TodoList extends Component {
         },
         update: (store, {data: {createTodo}}) => {
           // Read the data from our cache for this query.
-          const data = store.readQuery({ query: TodosQuery });
+          let data = store.readQuery({ query: TodosQuery });
           // Update our TodosQuery from the mutation to the end.
-          data.todos.unshift(createTodo);
+          data = data.todos.unshift(createTodo);
           // Write our data back to the cache.
           store.writeQuery({ query: TodosQuery, data});
         },
         refetchQueries:[{ query: TodosQuery}]
     });
     }
-   
+    
+    //when enter key is pressed, then submit 
+    handleKeyDown = e => {
+      if (e.key === "Enter") {
+      this.props.submit(this.state.text);
+      this.setState({text:""});
+      }
+    };
+
 render() {
-const {
-        data: {loading, todos}
-      } = this.props;
-      if (loading){
+const { data: {loading, todos} } = this.props;
+
+console.log(this.props)     
+if (loading){
         return null;
 }
   return (
@@ -101,7 +112,7 @@ const {
                 </div>
                 <ListItemSecondaryAction>
                   <IconButton 
-                      onClick={() => this.removeTodo(todo)}>
+                  onClick={() => this.removeTodo(todo)}>
                     <CloseIcon />
                   </IconButton>
                 </ListItemSecondaryAction>

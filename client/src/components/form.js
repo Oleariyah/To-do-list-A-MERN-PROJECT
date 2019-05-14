@@ -25,8 +25,7 @@ handleKeyDown = e => {
 };
 
 //form rendering part
-render() {
-    
+render() {   
     const {text} = this.state;
     return (
         <TextField 
@@ -36,7 +35,6 @@ render() {
         onKeyDown={this.handleKeyDown}
         onChange={this.handleChange} 
         fullWidth
-        
         />
     );
   }
